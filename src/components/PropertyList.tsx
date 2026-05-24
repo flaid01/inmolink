@@ -1,94 +1,7 @@
 import { useState } from "react";
 import { FilterPanel } from "./FilterPanel";
-
-// Mock properties data
-const mockProperties = [
-  {
-    _id: "1",
-    title: "Casa en Juriquilla",
-    description: "Hermosa casa en fraccionamiento privado con amenidades completas.",
-    price: 3500000,
-    type: "sale" as const,
-    address: "Av. Paseo de la República 123, Juriquilla, Querétaro",
-    squareMeters: 180,
-    bedrooms: 3,
-    bathrooms: 2,
-    parking: 2,
-    views: 45,
-    featured: true,
-    pricePerSquareMeter: 19444,
-    agent: { name: "María González", verified: true },
-    images: [],
-  },
-  {
-    _id: "2",
-    title: "Departamento Centro Histórico",
-    description: "Moderno departamento en el corazón de Querétaro.",
-    price: 15000,
-    type: "rent" as const,
-    address: "Calle Corregidora 45, Centro Histórico, Querétaro",
-    squareMeters: 85,
-    bedrooms: 2,
-    bathrooms: 1,
-    parking: 1,
-    views: 32,
-    featured: false,
-    pricePerSquareMeter: 176,
-    agent: { name: "María González", verified: true },
-    images: [],
-  },
-  {
-    _id: "3",
-    title: "Casa en Milenio III",
-    description: "Amplia casa familiar en zona residencial exclusiva.",
-    price: 5200000,
-    type: "sale" as const,
-    address: "Blvd. Milenio 789, Milenio III, Querétaro",
-    squareMeters: 250,
-    bedrooms: 4,
-    bathrooms: 3,
-    parking: 3,
-    views: 67,
-    featured: true,
-    pricePerSquareMeter: 20800,
-    agent: { name: "María González", verified: true },
-    images: [],
-  },
-  {
-    _id: "4",
-    title: "Townhouse en Zibatá",
-    description: "Moderna casa en condominio horizontal con áreas verdes.",
-    price: 2800000,
-    type: "sale" as const,
-    address: "Paseo de Zibatá 456, El Marqués, Querétaro",
-    squareMeters: 140,
-    bedrooms: 3,
-    bathrooms: 2,
-    parking: 2,
-    views: 28,
-    featured: false,
-    pricePerSquareMeter: 20000,
-    agent: { name: "María González", verified: true },
-    images: [],
-  },
-  {
-    _id: "5",
-    title: "Loft en Zona Dorada",
-    description: "Elegante loft tipo industrial con techos altos.",
-    price: 18000,
-    type: "rent" as const,
-    address: "Av. Constituyentes 234, Zona Dorada, Querétaro",
-    squareMeters: 95,
-    bedrooms: 1,
-    bathrooms: 1,
-    parking: 1,
-    views: 19,
-    featured: false,
-    pricePerSquareMeter: 189,
-    agent: { name: "María González", verified: true },
-    images: [],
-  },
-];
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export function PropertyList({ 
   onPropertySelect,
@@ -107,14 +20,12 @@ export function PropertyList({
     minSquareMeters: undefined as number | undefined,
   });
 
-  // Filter properties based on current filters
-  const properties = mockProperties.filter(property => {
-    if (filters.type && property.type !== filters.type) return false;
-    if (filters.minPrice && property.price < filters.minPrice) return false;
-    if (filters.maxPrice && property.price > filters.maxPrice) return false;
-    if (filters.minBedrooms && property.bedrooms < filters.minBedrooms) return false;
-    if (filters.minSquareMeters && property.squareMeters < filters.minSquareMeters) return false;
-    return true;
+  const properties = useQuery(api.properties.list, {
+    type: filters.type,
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
+    minBedrooms: filters.minBedrooms,
+    minSquareMeters: filters.minSquareMeters,
   });
 
   const togglePropertySelection = (propertyId: string) => {
@@ -124,6 +35,14 @@ export function PropertyList({
       onPropertiesSelect([...selectedProperties, propertyId]);
     }
   };
+
+  if (properties === undefined) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="text-xl text-gray-600 dark:text-gray-400">Cargando propiedades...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full">

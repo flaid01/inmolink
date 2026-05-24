@@ -145,6 +145,54 @@ export const create = mutation({
   },
 });
 
+export const createFromImport = mutation({
+  args: {
+    title: v.string(),
+    description: v.string(),
+    price: v.number(),
+    type: v.union(v.literal("sale"), v.literal("rent")),
+    status: v.string(),
+    latitude: v.number(),
+    longitude: v.number(),
+    address: v.string(),
+    city: v.string(),
+    state: v.string(),
+    neighborhood: v.optional(v.string()),
+    squareMeters: v.number(),
+    bedrooms: v.number(),
+    bathrooms: v.number(),
+    parking: v.number(),
+    pricePerSquareMeter: v.number(),
+    amenities: v.array(v.string()),
+    featured: v.boolean(),
+    views: v.number(),
+  },
+  handler: async (ctx, args) => {
+    // Try to get current user, otherwise find the first agent
+    let agentId = await getAuthUserId(ctx);
+    
+    if (!agentId) {
+      const firstAgent = await ctx.db.query("users").first();
+      if (firstAgent) {
+        agentId = firstAgent._id;
+      } else {
+        // Create a system agent if none exists
+        agentId = await ctx.db.insert("users", {
+          name: "Sistema InmoLink",
+          email: "system@inmolink.com",
+        });
+      }
+    }
+
+    return await ctx.db.insert("properties", {
+      ...args,
+      status: "active",
+      agentId: agentId!,
+      images: [],
+    });
+  },
+});
+
 export const incrementViews = mutation({
   args: { propertyId: v.id("properties") },
   handler: async (ctx, args) => {

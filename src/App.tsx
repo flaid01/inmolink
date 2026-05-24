@@ -22,7 +22,7 @@ export default function App() {
   const mockUser = {
     name: "Usuario Demo",
     email: "demo@example.com",
-    role: "buyer" as const,
+    role: "agent" as const,
     verified: true,
   };
 

@@ -7,6 +7,7 @@ import { PropertyDetail } from "./components/PropertyDetail";
 import { ComparisonView } from "./components/ComparisonView";
 import { AgentDashboard } from "./components/AgentDashboard";
 import { UserProfile } from "./components/UserProfile";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { useState } from "react";
 
 type View = "map" | "list" | "property" | "comparison" | "dashboard" | "profile";
@@ -26,13 +27,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <header className="sticky top-0 z-50 bg-white shadow-sm border-b">
+    <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors duration-300 overflow-hidden">
+      <header className="flex-shrink-0 bg-white dark:bg-gray-900 shadow-sm border-b dark:border-gray-800 z-50 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <h1 
-                className="text-2xl font-bold text-blue-900 cursor-pointer"
+                className="text-2xl font-bold text-blue-900 dark:text-blue-400 cursor-pointer"
                 onClick={() => setCurrentView("map")}
               >
                 🏠 InmoLink
@@ -40,30 +41,30 @@ export default function App() {
               <nav className="hidden md:flex space-x-6">
                 <button
                   onClick={() => setCurrentView("map")}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     currentView === "map" 
-                      ? "bg-blue-100 text-blue-700" 
-                      : "text-gray-600 hover:text-gray-900"
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" 
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   }`}
                 >
                   Mapa
                 </button>
                 <button
                   onClick={() => setCurrentView("list")}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     currentView === "list" 
-                      ? "bg-blue-100 text-blue-700" 
-                      : "text-gray-600 hover:text-gray-900"
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" 
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   }`}
                 >
                   Lista
                 </button>
                 <button
                   onClick={() => setCurrentView("comparison")}
-                  className={`px-3 py-2 rounded-md text-sm font-medium relative ${
+                  className={`px-3 py-2 rounded-md text-sm font-medium relative transition-colors ${
                     currentView === "comparison" 
-                      ? "bg-blue-100 text-blue-700" 
-                      : "text-gray-600 hover:text-gray-900"
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" 
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   }`}
                 >
                   Comparar
@@ -77,12 +78,13 @@ export default function App() {
             </div>
             
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <UserMenu 
                 onViewChange={setCurrentView} 
                 currentView={currentView}
                 user={mockUser}
               />
-              <div className="px-3 py-2 bg-gray-100 text-gray-600 rounded-md text-sm">
+              <div className="px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md text-sm transition-colors">
                 Modo Demo
               </div>
             </div>
@@ -90,7 +92,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 overflow-y-auto">
         <Content 
           currentView={currentView}
           selectedPropertyId={selectedPropertyId}
@@ -121,10 +123,10 @@ function UserMenu({
       {user.role === "agent" && (
         <button
           onClick={() => onViewChange("dashboard")}
-          className={`px-3 py-2 rounded-md text-sm font-medium ${
+          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
             currentView === "dashboard" 
-              ? "bg-green-100 text-green-700" 
-              : "text-gray-600 hover:text-gray-900"
+              ? "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300" 
+              : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
           }`}
         >
           Dashboard
@@ -132,10 +134,10 @@ function UserMenu({
       )}
       <button
         onClick={() => onViewChange("profile")}
-        className={`px-3 py-2 rounded-md text-sm font-medium ${
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
           currentView === "profile" 
-            ? "bg-blue-100 text-blue-700" 
-            : "text-gray-600 hover:text-gray-900"
+            ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" 
+            : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
         }`}
       >
         Perfil

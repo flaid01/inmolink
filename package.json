@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npm-run-all --parallel dev:frontend dev:backend",
     "dev:frontend": "vite --open",
-    "dev:backend": "convex dev",
+    "dev:backend": "node -e \"process.argv = [process.argv[0], 'convex', 'dev']; const util=require('node:util'); if(!util.styleText) util.styleText=(s,t)=>t; require('./node_modules/convex/dist/cli.bundle.cjs')\"",
     "build": "vite build",
     "lint": "tsc -p convex -noEmit --pretty false && tsc -p . -noEmit --pretty false && convex dev --once && vite build"
   },
@@ -14,7 +14,7 @@
     "@convex-dev/auth": "^0.0.80",
     "@types/leaflet": "^1.9.21",
     "clsx": "^2.1.1",
-    "convex": "^1.31.2",
+    "convex": "^1.39.1",
     "leaflet": "^1.9.4",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FilterPanel } from "./FilterPanel";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useTheme } from "./ThemeProvider";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -130,6 +131,7 @@ export function MapView({
   selectedProperties: string[];
   onPropertiesSelect: (ids: string[]) => void;
 }) {
+  const { theme } = useTheme();
   const [filters, setFilters] = useState({
     type: undefined as "sale" | "rent" | undefined,
     minPrice: undefined as number | undefined,
@@ -162,7 +164,7 @@ export function MapView({
     return L.divIcon({
       className: 'custom-div-icon',
       html: `
-        <div class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-blue-700 shadow-lg transform hover:scale-105 transition-all whitespace-nowrap border-2 border-white">
+        <div class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-blue-700 shadow-lg transform hover:scale-105 transition-all whitespace-nowrap border-2 border-white dark:border-gray-800">
           $${priceText}
         </div>
       `,
@@ -172,7 +174,7 @@ export function MapView({
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-full overflow-hidden transition-colors">
       {/* Filter Panel */}
       <FilterPanel filters={filters} onFiltersChange={setFilters} />
 
@@ -184,9 +186,13 @@ export function MapView({
           className="w-full h-full"
           zoomControl={false}
         >
-          {/* Tile Layer "Without Relief" (CartoDB Positron) */}
+          {/* Tile Layer themed based on selection */}
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            key={theme} // Force re-render when theme changes to update tiles
+            url={theme === "dark" 
+              ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            }
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           />
           
@@ -202,7 +208,7 @@ export function MapView({
               }}
             >
               <Popup>
-                <div className="p-1">
+                <div className="p-1 dark:text-gray-900">
                   <h3 className="font-semibold text-sm leading-tight">{property.title}</h3>
                   <p className="text-green-600 font-bold text-base mt-1">${property.price.toLocaleString()}</p>
                   <p className="text-xs text-gray-600 mt-1">
@@ -227,11 +233,11 @@ export function MapView({
               {properties.slice(0, 8).map((property) => (
                 <div
                   key={property._id}
-                  className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-4 min-w-[320px] max-w-[320px] cursor-pointer hover:shadow-2xl transition-all border border-gray-100"
+                  className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl shadow-xl p-4 min-w-[320px] max-w-[320px] cursor-pointer hover:shadow-2xl transition-all border border-gray-100 dark:border-gray-800"
                   onClick={() => onPropertySelect(property._id)}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-gray-900 truncate pr-2">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate pr-2">
                       {property.title}
                     </h3>
                     <button
@@ -241,8 +247,8 @@ export function MapView({
                       }}
                       className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
                         selectedProperties.includes(property._id)
-                          ? "bg-orange-100 text-orange-600"
-                          : "bg-gray-100 text-gray-400 hover:text-gray-600"
+                          ? "bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-400"
+                          : "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                       }`}
                     >
                       {selectedProperties.includes(property._id) ? "✓" : "+"}
@@ -250,25 +256,25 @@ export function MapView({
                   </div>
                   
                   <div className="space-y-1">
-                    <p className="text-2xl font-bold text-green-600">
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                       ${property.price.toLocaleString()}
                     </p>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                       <span>{property.bedrooms} rec</span>
                       <span>•</span>
                       <span>{property.bathrooms} baños</span>
                       <span>•</span>
                       <span>{property.squareMeters}m²</span>
                     </div>
-                    <p className="text-xs text-gray-500 truncate mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-500 truncate mt-1">
                       {property.address}
                     </p>
                     <div className="flex justify-between items-center mt-2">
-                      <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                      <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded">
                         ${property.pricePerSquareMeter}/m²
                       </span>
                       {property.featured && (
-                        <span className="text-[10px] uppercase tracking-wider font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded">
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 px-2 py-0.5 rounded">
                           Destacado
                         </span>
                       )}

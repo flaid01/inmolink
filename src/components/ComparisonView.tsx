@@ -151,8 +151,8 @@ function SpiderChart({ properties }: { properties: any[] }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4 text-center">
+    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 dark:border dark:border-gray-800 transition-colors">
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4 text-center">
         Análisis Comparativo Visual
       </h2>
       
@@ -166,7 +166,8 @@ function SpiderChart({ properties }: { properties: any[] }) {
               cy={center}
               r={radius * scale}
               fill="none"
-              stroke="#E5E7EB"
+              stroke="currentColor"
+              className="text-gray-200 dark:text-gray-700"
               strokeWidth="1"
             />
           ))}
@@ -181,7 +182,8 @@ function SpiderChart({ properties }: { properties: any[] }) {
                 y1={center}
                 x2={point.x}
                 y2={point.y}
-                stroke="#E5E7EB"
+                stroke="currentColor"
+                className="text-gray-200 dark:text-gray-700"
                 strokeWidth="1"
               />
             );
@@ -239,7 +241,7 @@ function SpiderChart({ properties }: { properties: any[] }) {
                 y={labelPoint.y}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                className="text-sm font-medium fill-gray-700"
+                className="text-sm font-medium fill-gray-700 dark:fill-gray-300 transition-colors"
               >
                 {category.label}
               </text>
@@ -256,14 +258,14 @@ function SpiderChart({ properties }: { properties: any[] }) {
               className="w-4 h-4 rounded"
               style={{ backgroundColor: colors[index] }}
             />
-            <span className="text-sm text-gray-700 truncate max-w-32">
+            <span className="text-sm text-gray-700 dark:text-gray-300 truncate max-w-32 transition-colors">
               {property.title}
             </span>
           </div>
         ))}
         <div className="flex items-center space-x-2">
           <div className="w-4 h-1 bg-gray-500" style={{ borderStyle: 'dashed', borderWidth: '1px 0' }} />
-          <span className="text-sm text-gray-700">Promedio</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300 transition-colors">Promedio</span>
         </div>
       </div>
     </div>
@@ -342,10 +344,10 @@ export function ComparisonView({
   const bestSize = getBestValue(displayProperties, 'squareMeters', false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-full bg-gray-50 dark:bg-gray-950 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             Comparador de Propiedades
           </h1>
           
@@ -354,7 +356,7 @@ export function ComparisonView({
             {selectedProperties.length > 0 && (
               <button
                 onClick={() => setShowSaveModal(true)}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                className="px-4 py-2 bg-green-600 dark:bg-green-700 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
               >
                 💾 Guardar Comparación
               </button>
@@ -365,12 +367,12 @@ export function ComparisonView({
                 onPropertiesSelect([]);
                 onComparisonSelect(null);
               }}
-              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+              className="px-4 py-2 bg-gray-600 dark:bg-gray-700 text-white rounded-md hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
             >
               🗑️ Limpiar
             </button>
 
-            <span className="text-gray-600">
+            <span className="text-gray-600 dark:text-gray-400">
               {displayProperties.length} propiedades seleccionadas
             </span>
           </div>
@@ -378,8 +380,8 @@ export function ComparisonView({
 
         {/* Saved Comparisons */}
         {savedComparisons.length > 0 && (
-          <div className="mb-8 bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="mb-8 bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 dark:border dark:border-gray-800 transition-colors">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
               Comparaciones Guardadas
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -388,27 +390,27 @@ export function ComparisonView({
                   key={comparison._id}
                   className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                     selectedComparisonId === comparison._id
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-700"
+                      : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                   }`}
                   onClick={() => handleLoadComparison(comparison)}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium text-gray-900">{comparison.name}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100">{comparison.name}</h3>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteComparison(comparison._id);
                       }}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500 hover:text-red-700 dark:hover:text-red-400"
                     >
                       🗑️
                     </button>
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     {comparison.propertyIds.length} propiedades
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-500">
                     {new Date(comparison._creationTime).toLocaleDateString()}
                   </p>
                 </div>
@@ -421,33 +423,33 @@ export function ComparisonView({
         {displayProperties.length > 0 ? (
           <div className="space-y-8">
             {/* Comparison Table */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden dark:border dark:border-gray-800 transition-colors">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-50 dark:bg-gray-800 transition-colors">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Característica
                       </th>
                       {displayProperties.map((property) => (
                         <th key={property._id} className="px-6 py-3 text-center">
                           <div className="space-y-2">
-                            <div className="w-16 h-16 mx-auto bg-gray-200 rounded-lg flex items-center justify-center">
+                            <div className="w-16 h-16 mx-auto bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                               <span className="text-2xl">🏠</span>
                             </div>
-                            <div className="text-sm font-medium text-gray-900 truncate max-w-32">
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-32 mx-auto">
                               {property.title}
                             </div>
                             <div className="flex space-x-1 justify-center">
                               <button
                                 onClick={() => onPropertySelect(property._id)}
-                                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
+                                className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/70 transition-colors"
                               >
                                 Ver
                               </button>
                               <button
                                 onClick={() => removeProperty(property._id)}
-                                className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
+                                className="text-xs bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-900/70 transition-colors"
                               >
                                 ✕
                               </button>
@@ -457,16 +459,18 @@ export function ComparisonView({
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800 transition-colors">
                     {/* Price */}
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                         Precio
                       </td>
                       {displayProperties.map((property) => (
                         <td key={property._id} className="px-6 py-4 whitespace-nowrap text-center">
                           <span className={`text-lg font-semibold ${
-                            property.price === bestPrice ? 'text-green-600 bg-green-50 px-2 py-1 rounded' : 'text-gray-900'
+                            property.price === bestPrice 
+                              ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded' 
+                              : 'text-gray-900 dark:text-gray-300'
                           }`}>
                             ${property.price.toLocaleString()}
                           </span>
@@ -475,14 +479,16 @@ export function ComparisonView({
                     </tr>
 
                     {/* Price per sqm */}
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr className="bg-gray-50 dark:bg-gray-800/50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                         Precio por m²
                       </td>
                       {displayProperties.map((property) => (
                         <td key={property._id} className="px-6 py-4 whitespace-nowrap text-center">
                           <span className={`text-sm font-medium ${
-                            property.pricePerSquareMeter === bestPricePerSqm ? 'text-green-600 bg-green-50 px-2 py-1 rounded' : 'text-gray-900'
+                            property.pricePerSquareMeter === bestPricePerSqm 
+                              ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded' 
+                              : 'text-gray-900 dark:text-gray-300'
                           }`}>
                             ${property.pricePerSquareMeter}/m²
                           </span>
@@ -492,13 +498,15 @@ export function ComparisonView({
 
                     {/* Square meters */}
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                         Metros cuadrados
                       </td>
                       {displayProperties.map((property) => (
                         <td key={property._id} className="px-6 py-4 whitespace-nowrap text-center">
                           <span className={`text-sm ${
-                            property.squareMeters === bestSize ? 'text-green-600 bg-green-50 px-2 py-1 rounded font-medium' : 'text-gray-900'
+                            property.squareMeters === bestSize 
+                              ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded font-medium' 
+                              : 'text-gray-900 dark:text-gray-300'
                           }`}>
                             {property.squareMeters} m²
                           </span>
@@ -507,12 +515,12 @@ export function ComparisonView({
                     </tr>
 
                     {/* Bedrooms */}
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr className="bg-gray-50 dark:bg-gray-800/50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                         Recámaras
                       </td>
                       {displayProperties.map((property) => (
-                        <td key={property._id} className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                        <td key={property._id} className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-gray-300">
                           {property.bedrooms}
                         </td>
                       ))}
@@ -520,23 +528,23 @@ export function ComparisonView({
 
                     {/* Bathrooms */}
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                         Baños
                       </td>
                       {displayProperties.map((property) => (
-                        <td key={property._id} className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                        <td key={property._id} className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-gray-300">
                           {property.bathrooms}
                         </td>
                       ))}
                     </tr>
 
                     {/* Parking */}
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr className="bg-gray-50 dark:bg-gray-800/50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                         Estacionamientos
                       </td>
                       {displayProperties.map((property) => (
-                        <td key={property._id} className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                        <td key={property._id} className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-gray-300">
                           {property.parking}
                         </td>
                       ))}
@@ -544,11 +552,11 @@ export function ComparisonView({
 
                     {/* Address */}
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                         Ubicación
                       </td>
                       {displayProperties.map((property) => (
-                        <td key={property._id} className="px-6 py-4 text-center text-sm text-gray-900">
+                        <td key={property._id} className="px-6 py-4 text-center text-sm text-gray-900 dark:text-gray-300">
                           <div className="max-w-32 mx-auto truncate">
                             {property.address}
                           </div>
@@ -557,16 +565,16 @@ export function ComparisonView({
                     </tr>
 
                     {/* Agent */}
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr className="bg-gray-50 dark:bg-gray-800/50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                         Agente
                       </td>
                       {displayProperties.map((property) => (
-                        <td key={property._id} className="px-6 py-4 text-center text-sm text-gray-900">
+                        <td key={property._id} className="px-6 py-4 text-center text-sm text-gray-900 dark:text-gray-300">
                           <div>
                             {property.agent?.name}
                             {property.agent?.verified && (
-                              <span className="ml-1 text-green-600">✓</span>
+                              <span className="ml-1 text-green-600 dark:text-green-500">✓</span>
                             )}
                           </div>
                         </td>
@@ -581,12 +589,12 @@ export function ComparisonView({
             <SpiderChart properties={displayProperties} />
           </div>
         ) : (
-          <div className="text-center py-12 bg-white rounded-lg shadow-md">
+          <div className="text-center py-12 bg-white dark:bg-gray-900 rounded-lg shadow-md transition-colors">
             <div className="text-6xl mb-4">⚖️</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
               No hay propiedades para comparar
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               Selecciona propiedades desde el mapa o la lista para compararlas aquí
             </p>
           </div>
@@ -594,9 +602,9 @@ export function ComparisonView({
 
         {/* Save Modal */}
         {showSaveModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 transition-all">
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-full max-w-md mx-4 shadow-2xl border dark:border-gray-800 transition-colors">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Guardar Comparación
               </h3>
               <input
@@ -604,19 +612,19 @@ export function ComparisonView({
                 placeholder="Nombre de la comparación"
                 value={comparisonName}
                 onChange={(e) => setComparisonName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
               />
               <div className="flex space-x-3">
                 <button
                   onClick={handleSaveComparison}
                   disabled={!comparisonName.trim()}
-                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 bg-blue-600 dark:bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Guardar
                 </button>
                 <button
                   onClick={() => setShowSaveModal(false)}
-                  className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors"
+                  className="flex-1 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-md hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors"
                 >
                   Cancelar
                 </button>

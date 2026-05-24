@@ -49,21 +49,21 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
   const [activeTab, setActiveTab] = useState<"info" | "favorites" | "comparisons">("info");
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-full bg-gray-50 dark:bg-gray-950 transition-colors">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 mb-8 dark:border dark:border-gray-800 transition-colors">
           <div className="flex items-center space-x-4">
-            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
               <span className="text-3xl">👤</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {mockUser.name}
-                {mockUser.verified && <span className="ml-2 text-green-600">✓</span>}
+                {mockUser.verified && <span className="ml-2 text-green-600 dark:text-green-500">✓</span>}
               </h1>
-              <p className="text-gray-600">{mockUser.email}</p>
-              <p className="text-sm text-gray-500 capitalize">
+              <p className="text-gray-600 dark:text-gray-400">{mockUser.email}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-500 capitalize">
                 {mockUser.role === "agent" ? "Agente Inmobiliario" : "Comprador"}
               </p>
             </div>
@@ -71,35 +71,35 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-lg shadow-md mb-8">
-          <div className="border-b border-gray-200">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md mb-8 dark:border dark:border-gray-800 transition-colors">
+          <div className="border-b border-gray-200 dark:border-gray-800">
             <nav className="flex space-x-8 px-6">
               <button
                 onClick={() => setActiveTab("info")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === "info"
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 }`}
               >
                 Información Personal
               </button>
               <button
                 onClick={() => setActiveTab("favorites")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === "favorites"
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 }`}
               >
                 Favoritos ({mockFavorites.length})
               </button>
               <button
                 onClick={() => setActiveTab("comparisons")}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === "comparisons"
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 }`}
               >
                 Comparaciones ({mockComparisons.length})
@@ -112,47 +112,47 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Nombre
                     </label>
-                    <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                    <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
                       {mockUser.name}
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Email
                     </label>
-                    <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                    <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
                       {mockUser.email}
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Tipo de Usuario
                     </label>
-                    <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50 capitalize">
+                    <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 capitalize transition-colors">
                       {mockUser.role === "agent" ? "Agente Inmobiliario" : "Comprador"}
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Estado de Verificación
                     </label>
-                    <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                    <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
                       {mockUser.verified ? (
-                        <span className="text-green-600">✓ Verificado</span>
+                        <span className="text-green-600 dark:text-green-500">✓ Verificado</span>
                       ) : (
-                        <span className="text-yellow-600">⏳ Pendiente</span>
+                        <span className="text-yellow-600 dark:text-yellow-500">⏳ Pendiente</span>
                       )}
                     </div>
                   </div>
                   {mockUser.phone && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Teléfono
                       </label>
-                      <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                      <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
                         {mockUser.phone}
                       </div>
                     </div>
@@ -168,21 +168,21 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
                     {mockFavorites.map((property) => (
                       <div
                         key={property._id}
-                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                        className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md dark:hover:bg-gray-800/50 transition-all cursor-pointer"
                         onClick={() => onViewChange("property")}
                       >
                         <div className="flex items-start space-x-4">
-                          <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
                             <span className="text-2xl">🏠</span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-gray-900 truncate">
+                            <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
                               {property.title}
                             </h3>
-                            <p className="text-lg font-semibold text-green-600">
+                            <p className="text-lg font-semibold text-green-600 dark:text-green-400">
                               ${property.price.toLocaleString()}
                             </p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                               {property.bedrooms} rec • {property.bathrooms} baños
                             </p>
                           </div>
@@ -193,10 +193,10 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
                 ) : (
                   <div className="text-center py-8">
                     <div className="text-4xl mb-4">❤️</div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                       No tienes propiedades favoritas
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                       Explora propiedades y marca tus favoritas
                     </p>
                   </div>
@@ -211,18 +211,18 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
                     {mockComparisons.map((comparison) => (
                       <div
                         key={comparison._id}
-                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                        className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md dark:hover:bg-gray-800/50 transition-all cursor-pointer"
                         onClick={() => onViewChange("comparison")}
                       >
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="font-medium text-gray-900">
+                            <h3 className="font-medium text-gray-900 dark:text-gray-100">
                               {comparison.name}
                             </h3>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
                               {comparison.propertyIds.length} propiedades
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 dark:text-gray-500">
                               {new Date(comparison._creationTime).toLocaleDateString()}
                             </p>
                           </div>
@@ -234,10 +234,10 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
                 ) : (
                   <div className="text-center py-8">
                     <div className="text-4xl mb-4">⚖️</div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                       No tienes comparaciones guardadas
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                       Compara propiedades y guarda tus análisis
                     </p>
                   </div>

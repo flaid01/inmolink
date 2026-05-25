@@ -8,23 +8,53 @@ import { ComparisonView } from "./components/ComparisonView";
 import { AgentDashboard } from "./components/AgentDashboard";
 import { UserProfile } from "./components/UserProfile";
 import { ThemeToggle } from "./components/ThemeToggle";
-import { useState } from "react";
+import { MockLogin } from "./components/MockLogin";
+import { useState, useEffect } from "react";
 
 type View = "map" | "list" | "property" | "comparison" | "dashboard" | "profile";
+
+interface User {
+  name: string;
+  email: string;
+  role: "agent" | "user";
+  verified: boolean;
+  verificationStatus: "none" | "pending" | "approved" | "rejected";
+}
 
 export default function App() {
   const [currentView, setCurrentView] = useState<View>("map");
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [selectedComparisonId, setSelectedComparisonId] = useState<string | null>(null);
   const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
+  const [user, setUser] = useState<User | null>(null);
 
-  // Mock user for demo purposes
-  const mockUser = {
-    name: "Usuario Demo",
-    email: "demo@example.com",
-    role: "agent" as const,
-    verified: true,
+  // Load user from localStorage on mount
+  useEffect(() => {
+    const savedUser = localStorage.getItem("inmolink_mock_user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const handleLogin = (newUser: User) => {
+    setUser(newUser);
+    localStorage.setItem("inmolink_mock_user", JSON.stringify(newUser));
   };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("inmolink_mock_user");
+    setCurrentView("map");
+  };
+
+  if (!user) {
+    return (
+      <>
+        <MockLogin onLogin={handleLogin} />
+        <Toaster />
+      </>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors duration-300 overflow-hidden">
@@ -82,10 +112,11 @@ export default function App() {
               <UserMenu 
                 onViewChange={setCurrentView} 
                 currentView={currentView}
-                user={mockUser}
+                user={user}
+                onLogout={handleLogout}
               />
               <div className="px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md text-sm transition-colors">
-                Modo Demo
+                Modo Mock
               </div>
             </div>
           </div>
@@ -102,6 +133,7 @@ export default function App() {
           onComparisonSelect={setSelectedComparisonId}
           onViewChange={setCurrentView}
           onPropertiesSelect={setSelectedProperties}
+          user={user}
         />
       </main>
       <Toaster />
@@ -112,11 +144,13 @@ export default function App() {
 function UserMenu({ 
   onViewChange, 
   currentView,
-  user
+  user,
+  onLogout
 }: { 
   onViewChange: (view: View) => void;
   currentView: View;
-  user: any;
+  user: User;
+  onLogout: () => void;
 }) {
   return (
     <div className="flex items-center space-x-4">
@@ -142,6 +176,12 @@ function UserMenu({
       >
         Perfil
       </button>
+      <button
+        onClick={onLogout}
+        className="px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+      >
+        Salir
+      </button>
     </div>
   );
 }
@@ -154,7 +194,8 @@ function Content({
   onPropertySelect, 
   onComparisonSelect,
   onViewChange,
-  onPropertiesSelect
+  onPropertiesSelect,
+  user
 }: {
   currentView: View;
   selectedPropertyId: string | null;
@@ -164,6 +205,7 @@ function Content({
   onComparisonSelect: (id: string | null) => void;
   onViewChange: (view: View) => void;
   onPropertiesSelect: (ids: string[]) => void;
+  user: User;
 }) {
   if (currentView === "property" && selectedPropertyId) {
     return (
@@ -192,11 +234,30 @@ function Content({
   }
 
   if (currentView === "dashboard") {
+    if (user.role === "agent" && user.verificationStatus !== "approved") {
+      return (
+        <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-4">
+          <div className="max-w-md w-full bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl text-center border dark:border-gray-800">
+            <div className="text-6xl mb-4">🔒</div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Acceso Restringido</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Su cuenta de Agente está en proceso de verificación. Debe completar su perfil profesional antes de acceder al Dashboard.
+            </p>
+            <button 
+              onClick={() => onViewChange("profile")}
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all"
+            >
+              Ir a Mi Perfil para Verificar
+            </button>
+          </div>
+        </div>
+      );
+    }
     return <AgentDashboard />;
   }
 
   if (currentView === "profile") {
-    return <UserProfile onViewChange={onViewChange} />;
+    return <UserProfile onViewChange={onViewChange} user={user} />;
   }
 
   if (currentView === "list") {

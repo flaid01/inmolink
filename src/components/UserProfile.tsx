@@ -2,14 +2,14 @@ import { useState } from "react";
 
 type View = "map" | "list" | "property" | "comparison" | "dashboard" | "profile";
 
-// Mock data
-const mockUser = {
-  name: "Usuario Demo",
-  email: "demo@example.com",
-  role: "buyer" as "buyer" | "agent",
-  verified: true,
-  phone: "+52 442 123 4567",
-};
+interface User {
+  name: string;
+  email: string;
+  role: "agent" | "user";
+  verified: boolean;
+  verificationStatus: "none" | "pending" | "approved" | "rejected";
+  phone?: string;
+}
 
 const mockFavorites = [
   {
@@ -45,8 +45,23 @@ const mockComparisons = [
   },
 ];
 
-export function UserProfile({ onViewChange }: { onViewChange: (view: View) => void }) {
-  const [activeTab, setActiveTab] = useState<"info" | "favorites" | "comparisons">("info");
+const mockAgentStats = {
+  license: "AMPI-7890-QX",
+  agency: "InmoLink Prime Realty",
+  experience: "8 años",
+  totalSales: 42,
+  activeListings: 12,
+  rating: 4.9,
+};
+
+export function UserProfile({ 
+  onViewChange, 
+  user 
+}: { 
+  onViewChange: (view: View) => void,
+  user: User 
+}) {
+  const [activeTab, setActiveTab] = useState<"info" | "favorites" | "comparisons" | "professional">("info");
 
   return (
     <div className="min-h-full bg-gray-50 dark:bg-gray-950 transition-colors">
@@ -55,16 +70,16 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 mb-8 dark:border dark:border-gray-800 transition-colors">
           <div className="flex items-center space-x-4">
             <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-              <span className="text-3xl">👤</span>
+              <span className="text-3xl">{user.role === "agent" ? "💼" : "👤"}</span>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {mockUser.name}
-                {mockUser.verified && <span className="ml-2 text-green-600 dark:text-green-500">✓</span>}
+                {user.name}
+                {user.verified && <span className="ml-2 text-green-600 dark:text-green-500">✓</span>}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">{mockUser.email}</p>
+              <p className="text-gray-600 dark:text-gray-400">{user.email}</p>
               <p className="text-sm text-gray-500 dark:text-gray-500 capitalize">
-                {mockUser.role === "agent" ? "Agente Inmobiliario" : "Comprador"}
+                {user.role === "agent" ? "Agente Inmobiliario Profesional" : "Cliente / Comprador"}
               </p>
             </div>
           </div>
@@ -84,6 +99,20 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
               >
                 Información Personal
               </button>
+              
+              {user.role === "agent" && (
+                <button
+                  onClick={() => setActiveTab("professional")}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === "professional"
+                      ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                      : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  }`}
+                >
+                  Perfil Profesional
+                </button>
+              )}
+
               <button
                 onClick={() => setActiveTab("favorites")}
                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
@@ -94,6 +123,7 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
               >
                 Favoritos ({mockFavorites.length})
               </button>
+              
               <button
                 onClick={() => setActiveTab("comparisons")}
                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
@@ -113,51 +143,111 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Nombre
+                      Nombre Completo
                     </label>
                     <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
-                      {mockUser.name}
+                      {user.name}
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Email
+                      Correo Electrónico
                     </label>
                     <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
-                      {mockUser.email}
+                      {user.email}
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Tipo de Usuario
+                      Tipo de Cuenta
                     </label>
                     <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 capitalize transition-colors">
-                      {mockUser.role === "agent" ? "Agente Inmobiliario" : "Comprador"}
+                      {user.role === "agent" ? "Agente Inmobiliario" : "Comprador Individual"}
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Estado de Verificación
+                      Estatus de Verificación
                     </label>
                     <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
-                      {mockUser.verified ? (
-                        <span className="text-green-600 dark:text-green-500">✓ Verificado</span>
+                      {user.verified ? (
+                        <span className="text-green-600 dark:text-green-500 font-medium">✓ Cuenta Verificada</span>
                       ) : (
-                        <span className="text-yellow-600 dark:text-yellow-500">⏳ Pendiente</span>
+                        <span className="text-yellow-600 dark:text-yellow-500 font-medium">⏳ Verificación en Proceso</span>
                       )}
                     </div>
                   </div>
-                  {mockUser.phone && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Teléfono
-                      </label>
-                      <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
-                        {mockUser.phone}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "professional" && user.role === "agent" && (
+              <div className="space-y-8">
+                {user.verificationStatus === "approved" ? (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Número de Licencia
+                        </label>
+                        <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-blue-50/50 dark:bg-blue-900/10 text-blue-900 dark:text-blue-300 font-mono transition-colors">
+                          {mockAgentStats.license}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Agencia / Inmobiliaria
+                        </label>
+                        <div className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
+                          {mockAgentStats.agency}
+                        </div>
                       </div>
                     </div>
-                  )}
-                </div>
+
+                    <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+                        <span className="mr-2">📊</span> Estadísticas de Desempeño
+                      </h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center transition-colors">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Ventas</p>
+                          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{mockAgentStats.totalSales}</p>
+                        </div>
+                        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center transition-colors">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Listados</p>
+                          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{mockAgentStats.activeListings}</p>
+                        </div>
+                        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center transition-colors">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Rating</p>
+                          <p className="text-2xl font-bold text-orange-500">{mockAgentStats.rating} ⭐</p>
+                        </div>
+                        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center transition-colors">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Exp.</p>
+                          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{mockAgentStats.experience}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-10 bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl border-2 border-dashed border-blue-200 dark:border-blue-900/30">
+                    <div className="text-5xl mb-4">📜</div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      Verificación de Agente Requerida
+                    </h3>
+                    <p className="max-w-md mx-auto text-gray-600 dark:text-gray-400 mb-8">
+                      Para acceder a las herramientas profesionales, publicar propiedades y recibir leads, necesitamos verificar su identidad y licencia profesional.
+                    </p>
+                    
+                    <div className="flex flex-col items-center space-y-4">
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+                        Subir Documentación Profesional
+                      </button>
+                      <p className="text-xs text-gray-500 dark:text-gray-500">
+                        Formatos aceptados: PDF, JPG, PNG (Max. 10MB)
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -168,15 +258,15 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
                     {mockFavorites.map((property) => (
                       <div
                         key={property._id}
-                        className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md dark:hover:bg-gray-800/50 transition-all cursor-pointer"
+                        className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md dark:hover:bg-gray-800/50 transition-all cursor-pointer group"
                         onClick={() => onViewChange("property")}
                       >
                         <div className="flex items-start space-x-4">
-                          <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
                             <span className="text-2xl">🏠</span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                            <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                               {property.title}
                             </h3>
                             <p className="text-lg font-semibold text-green-600 dark:text-green-400">
@@ -211,23 +301,21 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
                     {mockComparisons.map((comparison) => (
                       <div
                         key={comparison._id}
-                        className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md dark:hover:bg-gray-800/50 transition-all cursor-pointer"
+                        className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md dark:hover:bg-gray-800/50 transition-all cursor-pointer flex justify-between items-center group"
                         onClick={() => onViewChange("comparison")}
                       >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                              {comparison.name}
-                            </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {comparison.propertyIds.length} propiedades
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-500">
-                              {new Date(comparison._creationTime).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <span className="text-2xl">⚖️</span>
+                        <div>
+                          <h3 className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            {comparison.name}
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {comparison.propertyIds.length} propiedades en el set
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-500">
+                            Creado el {new Date(comparison._creationTime).toLocaleDateString()}
+                          </p>
                         </div>
+                        <span className="text-2xl opacity-50 group-hover:opacity-100 transition-opacity">⚖️</span>
                       </div>
                     ))}
                   </div>
@@ -250,3 +338,4 @@ export function UserProfile({ onViewChange }: { onViewChange: (view: View) => vo
     </div>
   );
 }
+

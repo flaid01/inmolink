@@ -9,6 +9,7 @@ export const list = query({
     maxPrice: v.optional(v.number()),
     minBedrooms: v.optional(v.number()),
     minSquareMeters: v.optional(v.number()),
+    location: v.optional(v.string()),
     bounds: v.optional(v.object({
       north: v.number(),
       south: v.number(),
@@ -43,6 +44,16 @@ export const list = query({
 
     if (args.minSquareMeters !== undefined) {
       filtered = filtered.filter(p => p.squareMeters >= args.minSquareMeters!);
+    }
+
+    if (args.location) {
+      const loc = args.location.toLowerCase();
+      filtered = filtered.filter(p => 
+        p.city.toLowerCase().includes(loc) || 
+        p.state.toLowerCase().includes(loc) ||
+        p.address.toLowerCase().includes(loc) ||
+        (p.neighborhood && p.neighborhood.toLowerCase().includes(loc))
+      );
     }
 
     if (args.bounds) {

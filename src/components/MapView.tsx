@@ -38,6 +38,7 @@ export function MapView({
     type: undefined as "sale" | "rent" | undefined,
     minPrice: undefined as number | undefined,
     maxPrice: undefined as number | undefined,
+    location: undefined as string | undefined,
     minBedrooms: undefined as number | undefined,
     minSquareMeters: undefined as number | undefined,
   });
@@ -46,6 +47,7 @@ export function MapView({
     type: filters.type,
     minPrice: filters.minPrice,
     maxPrice: filters.maxPrice,
+    location: filters.location,
     minBedrooms: filters.minBedrooms,
     minSquareMeters: filters.minSquareMeters,
   });

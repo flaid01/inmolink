@@ -1,8 +1,11 @@
+import { useState, useEffect } from "react";
+
 interface FilterPanelProps {
   filters: {
     type?: "sale" | "rent";
     minPrice?: number;
     maxPrice?: number;
+    location?: string;
     minBedrooms?: number;
     minSquareMeters?: number;
   };
@@ -10,11 +13,24 @@ interface FilterPanelProps {
 }
 
 export function FilterPanel({ filters, onFiltersChange }: FilterPanelProps) {
+  const [localLocation, setLocalLocation] = useState(filters.location || "");
+
+  // Sync local state when filters.location changes externally (e.g. Clear Filters)
+  useEffect(() => {
+    setLocalLocation(filters.location || "");
+  }, [filters.location]);
+
   const updateFilter = (key: string, value: any) => {
     onFiltersChange({
       ...filters,
       [key]: value === "" ? undefined : value,
     });
+  };
+
+  const handleLocationKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      updateFilter("location", localLocation);
+    }
   };
 
   return (
@@ -37,6 +53,25 @@ export function FilterPanel({ filters, onFiltersChange }: FilterPanelProps) {
               <option value="sale">Venta</option>
               <option value="rent">Renta</option>
             </select>
+          </div>
+
+          {/* Location */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Ubicación
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Ciudad, zona o dirección..."
+                value={localLocation}
+                onChange={(e) => setLocalLocation(e.target.value)}
+                onKeyDown={handleLocationKeyDown}
+                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">📍</span>
+            </div>
+            <p className="text-[10px] text-gray-400 mt-1 ml-1">Presiona Enter para buscar</p>
           </div>
 
           {/* Price Range */}

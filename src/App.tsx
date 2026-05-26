@@ -57,6 +57,37 @@ export default function App() {
     );
   }
 
+  // Verification Gate for Agents
+  if (user.role === "agent" && user.verificationStatus !== "approved") {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-950 dark:to-blue-950 px-4">
+        <div className="max-w-md w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-white/20 dark:border-gray-800 text-center">
+          <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl">⏳</span>
+          </div>
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4">
+            Cuenta en Revisión
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+            Hola <span className="font-bold text-blue-600 dark:text-blue-400">{user.name}</span>, su registro como Agente fue exitoso. Por seguridad, un administrador debe verificar su perfil antes de que pueda acceder al panel profesional.
+          </p>
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl mb-8">
+            <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+              Este proceso suele tardar menos de 24 horas hábiles.
+            </p>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="w-full py-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-2xl transition-all"
+          >
+            Cerrar Sesión
+          </button>
+        </div>
+        <Toaster />
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors duration-300 overflow-hidden">
       <header className="flex-shrink-0 bg-white dark:bg-gray-900 shadow-sm border-b dark:border-gray-800 z-50 transition-colors duration-300">
@@ -251,25 +282,6 @@ function Content({
   }
 
   if (currentView === "dashboard") {
-    if (user.role === "agent" && user.verificationStatus !== "approved") {
-      return (
-        <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-4">
-          <div className="max-w-md w-full bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl text-center border dark:border-gray-800">
-            <div className="text-6xl mb-4">🔒</div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Acceso Restringido</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Su cuenta de Agente está en proceso de verificación. Debe completar su perfil profesional antes de acceder al Dashboard.
-            </p>
-            <button 
-              onClick={() => onViewChange("profile")}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all"
-            >
-              Ir a Mi Perfil para Verificar
-            </button>
-          </div>
-        </div>
-      );
-    }
     return <AgentDashboard />;
   }
 

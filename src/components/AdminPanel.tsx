@@ -104,6 +104,7 @@ export function AdminPanel() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+                  {/* Real Convex Users */}
                   {users?.map(user => (
                     <tr key={user._id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</td>
@@ -124,6 +125,50 @@ export function AdminPanel() {
                         <button 
                           onClick={() => {
                             if(confirm("¿Seguro que deseas eliminar este usuario?")) deleteUser({ userId: user._id });
+                          }}
+                          className="text-red-600 hover:text-red-900 transition-colors"
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  
+                  {/* Mock Users for Demo */}
+                  {Object.entries(JSON.parse(localStorage.getItem("inmolink_mock_db") || "{}")).map(([email, user]: [string, any]) => (
+                    <tr key={email} className="bg-blue-50/30 dark:bg-blue-900/10">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {user.name} <span className="ml-1 text-[10px] bg-blue-100 dark:bg-blue-800 px-1 rounded">MOCK</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{email}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <button 
+                          onClick={() => {
+                            const db = JSON.parse(localStorage.getItem("inmolink_mock_db") || "{}");
+                            db[email].verificationStatus = db[email].verificationStatus === "approved" ? "pending" : "approved";
+                            db[email].verified = db[email].verificationStatus === "approved";
+                            localStorage.setItem("inmolink_mock_db", JSON.stringify(db));
+                            toast.success(`Usuario ${email} ${db[email].verificationStatus === "approved" ? "verificado" : "pendiente"}`);
+                            window.location.reload(); // Simple way to refresh for mock
+                          }}
+                          className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${
+                            user.verificationStatus === "approved" 
+                              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" 
+                              : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                          }`}
+                        >
+                          {user.verificationStatus === "approved" ? "✓ Verificado" : "⏳ Pendiente"}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <button 
+                          onClick={() => {
+                            if(confirm("¿Eliminar usuario mock?")) {
+                              const db = JSON.parse(localStorage.getItem("inmolink_mock_db") || "{}");
+                              delete db[email];
+                              localStorage.setItem("inmolink_mock_db", JSON.stringify(db));
+                              window.location.reload();
+                            }
                           }}
                           className="text-red-600 hover:text-red-900 transition-colors"
                         >

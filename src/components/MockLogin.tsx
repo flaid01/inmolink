@@ -92,14 +92,19 @@ export function MockLogin({ onLogin }: { onLogin: (user: User) => void }) {
         password,
         role,
         verified: role === "user", // Buyers verified by default, agents NOT
-        verificationStatus: role === "agent" ? "none" : "none",
+        verificationStatus: role === "agent" ? "pending" : "approved",
       };
 
       const customUsers = JSON.parse(localStorage.getItem("inmolink_mock_db") || "{}");
       customUsers[email] = newUser;
       localStorage.setItem("inmolink_mock_db", JSON.stringify(customUsers));
 
-      toast.success("Cuenta creada exitosamente. Ya puede iniciar sesión.");
+      if (role === "agent") {
+        toast.info("Cuenta de Agente creada. Requiere verificación de un administrador.");
+      } else {
+        toast.success("Cuenta creada exitosamente. Ya puede iniciar sesión.");
+      }
+      
       setMode("signIn");
       setIsLoading(false);
     }

@@ -4,12 +4,20 @@ import { toast } from "sonner";
 interface User {
   name: string;
   email: string;
-  role: "agent" | "user";
+  role: "agent" | "user" | "admin";
   verified: boolean;
   verificationStatus: "none" | "pending" | "approved" | "rejected";
 }
 
 const INITIAL_MOCK_USERS: Record<string, User & { password: string }> = {
+  "admin@inmolink.com": {
+    name: "Administrador",
+    email: "admin@inmolink.com",
+    password: "admin123",
+    role: "admin",
+    verified: true,
+    verificationStatus: "approved",
+  },
   "agent@inmolink.com": {
     name: "Agente Profesional",
     email: "agent@inmolink.com",
@@ -255,7 +263,9 @@ export function MockLogin({ onLogin }: { onLogin: (user: User) => void }) {
           <div className="inline-block p-4 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-gray-800">
             <p className="text-xs font-bold text-blue-900 dark:text-blue-400 uppercase tracking-widest mb-2">Entorno de Pruebas Local</p>
             <div className="grid grid-cols-1 gap-2 text-[10px] text-gray-500 dark:text-gray-400 font-mono">
-              <p>Las nuevas cuentas se guardan en este navegador.</p>
+              <p>Admin: admin@inmolink.com / admin123</p>
+              <p>Agente: agent@inmolink.com / agent123</p>
+              <p>Comprador: buyer@inmolink.com / buyer123</p>
             </div>
           </div>
         </div>

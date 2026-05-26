@@ -80,6 +80,37 @@ export const list = query({
   },
 });
 
+export const getMany = query({
+  args: { ids: v.array(v.id("properties")) },
+  handler: async (ctx, args) => {
+    const properties = await Promise.all(
+      args.ids.map(async (id) => {
+        const property = await ctx.db.get(id);
+        if (!property) return null;
+
+        const agent = await ctx.db.get(property.agentId);
+        
+        // Get image URLs from the images array in the property
+        const imageUrls = await Promise.all(
+          property.images.map(async (imageId) => await ctx.storage.getUrl(imageId))
+        );
+
+        return {
+          ...property,
+          agent: agent ? { 
+            name: agent.name || "Unknown Agent", 
+            email: agent.email || "", 
+            verified: true
+          } : null,
+          images: imageUrls.filter(Boolean),
+        };
+      })
+    );
+
+    return properties.filter(Boolean);
+  },
+});
+
 export const getById = query({
   args: { id: v.id("properties") },
   handler: async (ctx, args) => {
@@ -105,6 +136,8 @@ export const getById = query({
     };
   },
 });
+
+
 
 export const create = mutation({
   args: {

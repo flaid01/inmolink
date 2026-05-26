@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 type View = "map" | "list" | "property" | "comparison" | "dashboard" | "profile";
 
@@ -11,40 +13,6 @@ interface User {
   phone?: string;
 }
 
-const mockFavorites = [
-  {
-    _id: "1",
-    title: "Casa en Juriquilla",
-    price: 3500000,
-    bedrooms: 3,
-    bathrooms: 2,
-    image: null,
-  },
-  {
-    _id: "3",
-    title: "Casa en Milenio III",
-    price: 5200000,
-    bedrooms: 4,
-    bathrooms: 3,
-    image: null,
-  },
-];
-
-const mockComparisons = [
-  {
-    _id: "comp1",
-    name: "Casas Familiares",
-    propertyIds: ["1", "3", "4"],
-    _creationTime: Date.now() - 7 * 24 * 60 * 60 * 1000,
-  },
-  {
-    _id: "comp2",
-    name: "Opciones de Renta",
-    propertyIds: ["2", "5"],
-    _creationTime: Date.now() - 3 * 24 * 60 * 60 * 1000,
-  },
-];
-
 const mockAgentStats = {
   license: "AMPI-7890-QX",
   agency: "InmoLink Prime Realty",
@@ -56,12 +24,17 @@ const mockAgentStats = {
 
 export function UserProfile({ 
   onViewChange, 
-  user 
+  user,
+  onPropertySelect
 }: { 
   onViewChange: (view: View) => void,
-  user: User 
+  user: User,
+  onPropertySelect: (id: string) => void
 }) {
   const [activeTab, setActiveTab] = useState<"info" | "favorites" | "comparisons" | "professional">("info");
+  
+  const favorites = useQuery(api.favorites.list) || [];
+  const comparisons = useQuery(api.comparisons.list) || [];
 
   return (
     <div className="min-h-full bg-gray-50 dark:bg-gray-950 transition-colors">
@@ -107,10 +80,10 @@ export function UserProfile({
                     activeTab === "professional"
                       ? "border-blue-500 text-blue-600 dark:text-blue-400"
                       : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                  }`}
-                >
-                  Perfil Profesional
-                </button>
+                }`}
+              >
+                Perfil Profesional
+              </button>
               )}
 
               <button
@@ -121,7 +94,7 @@ export function UserProfile({
                     : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 }`}
               >
-                Favoritos ({mockFavorites.length})
+                Favoritos ({favorites.length})
               </button>
               
               <button
@@ -132,7 +105,7 @@ export function UserProfile({
                     : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 }`}
               >
-                Comparaciones ({mockComparisons.length})
+                Comparaciones ({comparisons.length})
               </button>
             </nav>
           </div>
@@ -253,17 +226,24 @@ export function UserProfile({
 
             {activeTab === "favorites" && (
               <div>
-                {mockFavorites.length > 0 ? (
+                {favorites.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {mockFavorites.map((property) => (
+                    {favorites.map((property: any) => (
                       <div
                         key={property._id}
                         className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md dark:hover:bg-gray-800/50 transition-all cursor-pointer group"
-                        onClick={() => onViewChange("property")}
+                        onClick={() => {
+                          onPropertySelect(property._id);
+                          onViewChange("property");
+                        }}
                       >
                         <div className="flex items-start space-x-4">
-                          <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
-                            <span className="text-2xl">🏠</span>
+                          <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors relative overflow-hidden">
+                            {property.images && property.images.length > 0 ? (
+                              <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-2xl">🏠</span>
+                            )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
@@ -296,9 +276,9 @@ export function UserProfile({
 
             {activeTab === "comparisons" && (
               <div>
-                {mockComparisons.length > 0 ? (
+                {comparisons.length > 0 ? (
                   <div className="space-y-4">
-                    {mockComparisons.map((comparison) => (
+                    {comparisons.map((comparison: any) => (
                       <div
                         key={comparison._id}
                         className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md dark:hover:bg-gray-800/50 transition-all cursor-pointer flex justify-between items-center group"
@@ -338,4 +318,3 @@ export function UserProfile({
     </div>
   );
 }
-

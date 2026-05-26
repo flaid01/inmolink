@@ -7,16 +7,17 @@ import { PropertyDetail } from "./components/PropertyDetail";
 import { ComparisonView } from "./components/ComparisonView";
 import { AgentDashboard } from "./components/AgentDashboard";
 import { UserProfile } from "./components/UserProfile";
+import { AdminPanel } from "./components/AdminPanel";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { MockLogin } from "./components/MockLogin";
 import { useState, useEffect } from "react";
 
-type View = "map" | "list" | "property" | "comparison" | "dashboard" | "profile";
+type View = "map" | "list" | "property" | "comparison" | "dashboard" | "profile" | "admin";
 
 interface User {
   name: string;
   email: string;
-  role: "agent" | "user";
+  role: "agent" | "user" | "admin";
   verified: boolean;
   verificationStatus: "none" | "pending" | "approved" | "rejected";
 }
@@ -154,6 +155,18 @@ function UserMenu({
 }) {
   return (
     <div className="flex items-center space-x-4">
+      {user.role === "admin" && (
+        <button
+          onClick={() => onViewChange("admin")}
+          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+            currentView === "admin" 
+              ? "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300" 
+              : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+          }`}
+        >
+          Admin
+        </button>
+      )}
       {user.role === "agent" && (
         <button
           onClick={() => onViewChange("dashboard")}
@@ -207,6 +220,10 @@ function Content({
   onPropertiesSelect: (ids: string[]) => void;
   user: User;
 }) {
+  if (currentView === "admin") {
+    return <AdminPanel />;
+  }
+
   if (currentView === "property" && selectedPropertyId) {
     return (
       <PropertyDetail 
@@ -257,7 +274,7 @@ function Content({
   }
 
   if (currentView === "profile") {
-    return <UserProfile onViewChange={onViewChange} user={user} />;
+    return <UserProfile onViewChange={onViewChange} user={user} onPropertySelect={onPropertySelect} />;
   }
 
   if (currentView === "list") {

@@ -2,6 +2,10 @@ import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
+import { toast } from "sonner";
 
 // Fix for default Leaflet icon issues in Vite/Webpack
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -10,135 +14,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
-
-// Mock property data
-const mockProperties = {
-  "1": {
-    _id: "1",
-    title: "Casa en Juriquilla",
-    description: "Hermosa casa en fraccionamiento privado con amenidades completas. Cuenta con jardín, terraza y excelente ubicación cerca de centros comerciales. Esta propiedad ofrece un estilo de vida moderno y cómodo para toda la familia.",
-    price: 3500000,
-    type: "sale" as const,
-    latitude: 20.5888,
-    longitude: -100.4468,
-    address: "Av. Paseo de la República 123, Juriquilla, Querétaro",
-    squareMeters: 180,
-    bedrooms: 3,
-    bathrooms: 2,
-    parking: 2,
-    views: 45,
-    featured: true,
-    pricePerSquareMeter: 19444,
-    _creationTime: Date.now() - 30 * 24 * 60 * 60 * 1000, // 30 days ago
-    agent: { 
-      name: "María González", 
-      email: "maria@inmobiliaria.com", 
-      verified: true,
-      phone: "+52 442 123 4567"
-    },
-    images: [],
-  },
-  "2": {
-    _id: "2",
-    title: "Departamento Centro Histórico",
-    description: "Moderno departamento en el corazón de Querétaro. Completamente amueblado con vista a la catedral y cerca de todos los servicios. Perfecto para profesionistas que buscan comodidad y ubicación privilegiada.",
-    price: 15000,
-    type: "rent" as const,
-    latitude: 20.5931,
-    longitude: -100.3931,
-    address: "Calle Corregidora 45, Centro Histórico, Querétaro",
-    squareMeters: 85,
-    bedrooms: 2,
-    bathrooms: 1,
-    parking: 1,
-    views: 32,
-    featured: false,
-    pricePerSquareMeter: 176,
-    _creationTime: Date.now() - 15 * 24 * 60 * 60 * 1000, // 15 days ago
-    agent: { 
-      name: "María González", 
-      email: "maria@inmobiliaria.com", 
-      verified: true,
-      phone: "+52 442 123 4567"
-    },
-    images: [],
-  },
-  "3": {
-    _id: "3",
-    title: "Casa en Milenio III",
-    description: "Amplia casa familiar en zona residencial exclusiva. Cuenta con alberca, jardín amplio y acabados de lujo. Ideal para familias que buscan espacio, comodidad y exclusividad en una de las mejores zonas de Querétaro.",
-    price: 5200000,
-    type: "sale" as const,
-    latitude: 20.6197,
-    longitude: -100.4306,
-    address: "Blvd. Milenio 789, Milenio III, Querétaro",
-    squareMeters: 250,
-    bedrooms: 4,
-    bathrooms: 3,
-    parking: 3,
-    views: 67,
-    featured: true,
-    pricePerSquareMeter: 20800,
-    _creationTime: Date.now() - 45 * 24 * 60 * 60 * 1000, // 45 days ago
-    agent: { 
-      name: "María González", 
-      email: "maria@inmobiliaria.com", 
-      verified: true,
-      phone: "+52 442 123 4567"
-    },
-    images: [],
-  },
-  "4": {
-    _id: "4",
-    title: "Townhouse en Zibatá",
-    description: "Moderna casa en condominio horizontal con áreas verdes y seguridad 24/7. Perfecta para familias jóvenes que buscan un ambiente seguro y tranquilo con todas las comodidades modernas.",
-    price: 2800000,
-    type: "sale" as const,
-    latitude: 20.5234,
-    longitude: -100.2456,
-    address: "Paseo de Zibatá 456, El Marqués, Querétaro",
-    squareMeters: 140,
-    bedrooms: 3,
-    bathrooms: 2,
-    parking: 2,
-    views: 28,
-    featured: false,
-    pricePerSquareMeter: 20000,
-    _creationTime: Date.now() - 20 * 24 * 60 * 60 * 1000, // 20 days ago
-    agent: { 
-      name: "María González", 
-      email: "maria@inmobiliaria.com", 
-      verified: true,
-      phone: "+52 442 123 4567"
-    },
-    images: [],
-  },
-  "5": {
-    _id: "5",
-    title: "Loft en Zona Dorada",
-    description: "Elegante loft tipo industrial con techos altos y diseño contemporáneo. Ideal para profesionistas que aprecian el diseño moderno y la funcionalidad en una ubicación privilegiada.",
-    price: 18000,
-    type: "rent" as const,
-    latitude: 20.6089,
-    longitude: -100.4103,
-    address: "Av. Constituyentes 234, Zona Dorada, Querétaro",
-    squareMeters: 95,
-    bedrooms: 1,
-    bathrooms: 1,
-    parking: 1,
-    views: 19,
-    featured: false,
-    pricePerSquareMeter: 189,
-    _creationTime: Date.now() - 10 * 24 * 60 * 60 * 1000, // 10 days ago
-    agent: { 
-      name: "María González", 
-      email: "maria@inmobiliaria.com", 
-      verified: true,
-      phone: "+52 442 123 4567"
-    },
-    images: [],
-  },
-};
 
 export function PropertyDetail({ 
   propertyId, 
@@ -151,13 +26,19 @@ export function PropertyDetail({
   selectedProperties: string[];
   onPropertiesSelect: (ids: string[]) => void;
 }) {
-  const property = mockProperties[propertyId as keyof typeof mockProperties];
-  const isFavorite = false; // Mock favorite state
+  const property = useQuery(api.properties.getById, { id: propertyId as Id<"properties"> });
+  const isFavorite = useQuery(api.favorites.isFavorite, { propertyId: propertyId as Id<"properties"> });
+  
+  const addFavorite = useMutation(api.favorites.add);
+  const removeFavorite = useMutation(api.favorites.remove);
+  const incrementViews = useMutation(api.properties.incrementViews);
 
   useEffect(() => {
-    // Mock increment views
-    console.log(`Incrementing views for property ${propertyId}`);
-  }, [propertyId]);
+    if (propertyId) {
+      incrementViews({ propertyId: propertyId as Id<"properties"> })
+        .catch(err => console.error("Error incrementing views:", err));
+    }
+  }, [propertyId, incrementViews]);
 
   const togglePropertySelection = () => {
     if (selectedProperties.includes(propertyId)) {
@@ -168,8 +49,27 @@ export function PropertyDetail({
   };
 
   const handleToggleFavorite = async () => {
-    console.log(`Toggling favorite for property ${propertyId}`);
+    try {
+      if (isFavorite) {
+        await removeFavorite({ propertyId: propertyId as Id<"properties"> });
+        toast.success("Eliminado de favoritos");
+      } else {
+        await addFavorite({ propertyId: propertyId as Id<"properties"> });
+        toast.success("Agregado a favoritos");
+      }
+    } catch (error) {
+      toast.error("Error al actualizar favoritos");
+      console.error(error);
+    }
   };
+
+  if (property === undefined) {
+    return (
+      <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-950 transition-colors">
+        <div className="text-xl text-gray-600 dark:text-gray-400">Cargando detalles...</div>
+      </div>
+    );
+  }
 
   if (!property) {
     return (
@@ -244,8 +144,19 @@ export function PropertyDetail({
           <div className="lg:col-span-2 space-y-8">
             {/* Image Gallery */}
             <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden dark:border dark:border-gray-800">
-              <div className="h-96 bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
-                <span className="text-8xl">🏠</span>
+              <div className="h-96 bg-gray-200 dark:bg-gray-800 flex items-center justify-center relative">
+                {property.images && property.images.length > 0 ? (
+                  <img 
+                    src={property.images[0]} 
+                    alt={property.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-8xl">🏠</span>
+                )}
+                <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                  {property.images?.length || 0} fotos
+                </div>
               </div>
             </div>
 

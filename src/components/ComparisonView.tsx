@@ -1,94 +1,8 @@
 import { useState } from "react";
-
-// Mock properties data
-const mockProperties = [
-  {
-    _id: "1",
-    title: "Casa en Juriquilla",
-    price: 3500000,
-    type: "sale" as const,
-    squareMeters: 180,
-    bedrooms: 3,
-    bathrooms: 2,
-    parking: 2,
-    address: "Av. Paseo de la República 123, Juriquilla, Querétaro",
-    pricePerSquareMeter: 19444,
-    agent: { name: "María González", verified: true },
-    images: [],
-  },
-  {
-    _id: "2",
-    title: "Departamento Centro Histórico",
-    price: 15000,
-    type: "rent" as const,
-    squareMeters: 85,
-    bedrooms: 2,
-    bathrooms: 1,
-    parking: 1,
-    address: "Calle Corregidora 45, Centro Histórico, Querétaro",
-    pricePerSquareMeter: 176,
-    agent: { name: "María González", verified: true },
-    images: [],
-  },
-  {
-    _id: "3",
-    title: "Casa en Milenio III",
-    price: 5200000,
-    type: "sale" as const,
-    squareMeters: 250,
-    bedrooms: 4,
-    bathrooms: 3,
-    parking: 3,
-    address: "Blvd. Milenio 789, Milenio III, Querétaro",
-    pricePerSquareMeter: 20800,
-    agent: { name: "María González", verified: true },
-    images: [],
-  },
-  {
-    _id: "4",
-    title: "Townhouse en Zibatá",
-    price: 2800000,
-    type: "sale" as const,
-    squareMeters: 140,
-    bedrooms: 3,
-    bathrooms: 2,
-    parking: 2,
-    address: "Paseo de Zibatá 456, El Marqués, Querétaro",
-    pricePerSquareMeter: 20000,
-    agent: { name: "María González", verified: true },
-    images: [],
-  },
-  {
-    _id: "5",
-    title: "Loft en Zona Dorada",
-    price: 18000,
-    type: "rent" as const,
-    squareMeters: 95,
-    bedrooms: 1,
-    bathrooms: 1,
-    parking: 1,
-    address: "Av. Constituyentes 234, Zona Dorada, Querétaro",
-    pricePerSquareMeter: 189,
-    agent: { name: "María González", verified: true },
-    images: [],
-  },
-];
-
-// Mock saved comparisons
-const mockComparisons = [
-  {
-    _id: "comp1",
-    name: "Casas Familiares",
-    propertyIds: ["1", "3", "4"],
-    _creationTime: Date.now() - 7 * 24 * 60 * 60 * 1000, // 7 days ago
-  },
-  {
-    _id: "comp2",
-    name: "Opciones de Renta",
-    propertyIds: ["2", "5"],
-    _creationTime: Date.now() - 3 * 24 * 60 * 60 * 1000, // 3 days ago
-  },
-];
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
+import { toast } from "sonner";
 
 // Spider Chart Component
 function SpiderChart({ properties }: { properties: any[] }) {
@@ -209,8 +123,8 @@ function SpiderChart({ properties }: { properties: any[] }) {
                 const point = getPoint(index, value);
                 return `${point.x},${point.y}`;
               }).join(' ')}
-              fill={`${colors[propertyIndex]}20`}
-              stroke={colors[propertyIndex]}
+              fill={`${colors[propertyIndex % colors.length]}20`}
+              stroke={colors[propertyIndex % colors.length]}
               strokeWidth="2"
             />
           ))}
@@ -225,7 +139,7 @@ function SpiderChart({ properties }: { properties: any[] }) {
                   cx={point.x}
                   cy={point.y}
                   r="4"
-                  fill={colors[propertyIndex]}
+                  fill={colors[propertyIndex % colors.length]}
                 />
               );
             })
@@ -256,7 +170,7 @@ function SpiderChart({ properties }: { properties: any[] }) {
           <div key={property._id} className="flex items-center space-x-2">
             <div 
               className="w-4 h-4 rounded"
-              style={{ backgroundColor: colors[index] }}
+              style={{ backgroundColor: colors[index % colors.length] }}
             />
             <span className="text-sm text-gray-700 dark:text-gray-300 truncate max-w-32 transition-colors">
               {property.title}
@@ -287,32 +201,28 @@ export function ComparisonView({
 }) {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [comparisonName, setComparisonName] = useState("");
-  const [savedComparisons, setSavedComparisons] = useState(mockComparisons);
 
-  const selectedPropertiesData = mockProperties.filter(p => 
-    selectedProperties.includes(p._id)
-  );
+  const savedComparisons = useQuery(api.comparisons.list) || [];
+  const createComparison = useMutation(api.comparisons.create);
+  const deleteComparison = useMutation(api.comparisons.remove);
 
-  const selectedComparison = savedComparisons.find(c => c._id === selectedComparisonId);
-  const comparisonPropertiesData = selectedComparison 
-    ? mockProperties.filter(p => selectedComparison.propertyIds.includes(p._id))
-    : [];
-
-  const displayProperties = (comparisonPropertiesData.length > 0 
-    ? comparisonPropertiesData 
-    : selectedPropertiesData).filter(Boolean);
+  const displayProperties = useQuery(api.properties.getMany, { 
+    ids: selectedProperties as Id<"properties">[] 
+  }) || [];
 
   const handleSaveComparison = async () => {
     if (comparisonName.trim() && selectedProperties.length > 0) {
-      const newComparison = {
-        _id: `comp${Date.now()}`,
-        name: comparisonName.trim(),
-        propertyIds: selectedProperties,
-        _creationTime: Date.now(),
-      };
-      setSavedComparisons([...savedComparisons, newComparison]);
-      setComparisonName("");
-      setShowSaveModal(false);
+      try {
+        await createComparison({
+          name: comparisonName.trim(),
+          propertyIds: selectedProperties as Id<"properties">[],
+        });
+        setComparisonName("");
+        setShowSaveModal(false);
+        toast.success("Comparación guardada");
+      } catch (error) {
+        toast.error("Error al guardar la comparación");
+      }
     }
   };
 
@@ -322,9 +232,14 @@ export function ComparisonView({
   };
 
   const handleDeleteComparison = async (comparisonId: string) => {
-    setSavedComparisons(savedComparisons.filter(c => c._id !== comparisonId));
-    if (selectedComparisonId === comparisonId) {
-      onComparisonSelect(null);
+    try {
+      await deleteComparison({ id: comparisonId as Id<"comparisons"> });
+      if (selectedComparisonId === comparisonId) {
+        onComparisonSelect(null);
+      }
+      toast.success("Comparación eliminada");
+    } catch (error) {
+      toast.error("Error al eliminar la comparación");
     }
   };
 
@@ -434,8 +349,12 @@ export function ComparisonView({
                       {displayProperties.map((property) => (
                         <th key={property._id} className="px-6 py-3 text-center">
                           <div className="space-y-2">
-                            <div className="w-16 h-16 mx-auto bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                              <span className="text-2xl">🏠</span>
+                            <div className="w-16 h-16 mx-auto bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center relative overflow-hidden">
+                              {property.images && property.images.length > 0 ? (
+                                <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-2xl">🏠</span>
+                              )}
                             </div>
                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-32 mx-auto">
                               {property.title}

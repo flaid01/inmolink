@@ -70,11 +70,25 @@ export function PropertyList({
                   onClick={() => onPropertySelect(property._id)}
                 >
                   {/* Image */}
-                  <div className="h-48 bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
-                    <span className="text-4xl">🏠</span>
+                  <div className="h-48 bg-gray-200 dark:bg-gray-800 flex items-center justify-center relative overflow-hidden">
+                    {property.images && property.images.length > 0 ? (
+                      <img 
+                        src={property.images[0]} 
+                        alt={property.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-4xl">🏠</span>
+                    )}
+                    {property.featured && (
+                      <div className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow-lg">
+                        Destacado
+                      </div>
+                    )}
                   </div>
 
                   {/* Content */}
+
                   <div className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
